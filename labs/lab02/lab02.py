@@ -32,6 +32,10 @@ def composite_identity(f, g):
     False
     """
     "*** YOUR CODE HERE ***"
+    def compare(x):
+        y = g(f(x))
+        return y == composer(f, g)(x)
+    return compare
 
 
 def count_cond(condition):
@@ -62,6 +66,14 @@ def count_cond(condition):
     8
     """
     "*** YOUR CODE HERE ***"
+    def helper(n):
+        i, count= 1, 0
+        while i<= n:
+            if condition(n, i):
+                count += 1
+            i += 1
+        return count
+    return helper
 
 
 def multiple(a, b):
@@ -73,6 +85,15 @@ def multiple(a, b):
     42
     """
     "*** YOUR CODE HERE ***"
+    def gcd(a, b):
+        min_a_b = min(a, b)
+        i, max_factor = 1, 1
+        while i <= min_a_b:
+            if a % i == 0 and b % i == 0:
+                max_factor = i
+            i += 1
+        return max_factor
+    return a * b // gcd(a, b)
 
 
 def cycle(f1, f2, f3):
@@ -102,3 +123,35 @@ def cycle(f1, f2, f3):
     19
     """
     "*** YOUR CODE HERE ***"
+    # 这里写复杂的原因是因为只考虑了从结尾然后倒数着来解决问题
+    # 在思考问题的时候，我们要从多角度，从正反两面来解决问题
+    # 还要学会巧用递归来帮我们简化问题
+    # def combine(n):
+    #     def helper(x):
+    #         nonlocal n
+    #         while n >= 3:
+    #             x = f3(f2(f1(x)))
+    #             n -= 3
+    #         if n == 0:
+    #             pass
+    #         elif n == 1:
+    #             x = f1(x)
+    #         elif n == 2:
+    #             x = f2(f1(x))
+    #         return x
+    #     return helper
+    # return combine
+    def g(n):
+        def h(x):
+            i = 0
+            while i < n:
+                if i % 3 == 0:
+                    x = f1(x)
+                elif i % 3 == 1:
+                    x = f2(x)
+                else:
+                    x = f3(x)
+                i += 1
+            return x
+        return h
+    return g
