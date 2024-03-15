@@ -25,7 +25,19 @@ def num_eights(n):
     True
     """
     "*** YOUR CODE HERE ***"
-
+    # if n == 0:
+    #     return 0
+    # else:
+    #     if n % 10 == 8:
+    #         return 1 + num_eights(n // 10)
+    #     else:
+    #         return num_eights(n // 10)
+    if n % 10 == 8:
+        return 1 + num_eights(n // 10)
+    elif n < 10:
+        return 0
+    else:
+        return num_eights(n // 10)
 
 def pingpong(n):
     """Return the nth element of the ping-pong sequence.
@@ -61,6 +73,18 @@ def pingpong(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    def helper(start, value, direct):
+        if start == n:
+            return value
+        elif not (start % 8) or num_eights(start):
+            return helper(start + 1, value - direct, -direct)
+        else:
+            return helper(start + 1, value + direct, direct)
+    
+    return helper(1, 1, 1)
+           
+    
+    
 
 
 def next_larger_coin(coin):
@@ -117,3 +141,20 @@ def count_coins(change):
     True
     """
     "*** YOUR CODE HERE ***"
+    # 逻辑有部分冗余了，可以精简一下的
+    # def helper(value ,max_coin):
+    #     if value == 0 or max_coin == 1:
+    #         return 1
+    #     if value < 0 or not max_coin:
+    #         return 0
+    #     if value < max_coin:
+    #         return helper(value, next_smaller_coin(max_coin))
+    #     else:
+    #         return helper(value - max_coin, max_coin) + helper(value, next_smaller_coin(max_coin))
+    def helper(value ,max_coin):
+        if value == 0 or max_coin == 1:
+            return 1
+        if value < 0 or not max_coin:
+            return 0
+        return helper(value - max_coin, max_coin) + helper(value, next_smaller_coin(max_coin))
+    return helper(change, 25)
