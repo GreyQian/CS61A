@@ -25,6 +25,12 @@ def flatten(s):
     [[1, [1, [1, [1, 1, [1, 1, [1]]]], 1]]]
     """
     "*** YOUR CODE HERE ***"
+    if s == []:
+        return s
+    elif type(s[0]) == list:
+        return flatten(s[0]) + flatten(s[1:])
+    else:
+        return [s[0]] + flatten(s[1:])
 
 
 def my_map(fn, seq):
@@ -39,7 +45,7 @@ def my_map(fn, seq):
     2023
     [None, None, None]
     """
-    return ______
+    return [fn(x) for x in seq]
 
 
 def my_filter(pred, seq):
@@ -58,7 +64,7 @@ def my_filter(pred, seq):
     >>> my_filter(lambda x: max(5, x) == 5, [1, 2, 3, 4, 5, 6, 7])
     [1, 2, 3, 4, 5]
     """
-    return ______
+    return [x for x in seq if pred(x)]
 
 
 def my_reduce(combiner, seq):
@@ -74,6 +80,11 @@ def my_reduce(combiner, seq):
     11
     """
     "*** YOUR CODE HERE ***"
+    result = seq[0]
+    for i in range(1, len(seq)):
+        result = combiner(result, seq[i])
+    
+    return result
 
 
 def my_map_syntax_check():
@@ -113,6 +124,9 @@ def distance(city_a, city_b):
     5.0
     """
     "*** YOUR CODE HERE ***"
+    a_x, a_y= get_lat(city_a), get_lon(city_a)
+    b_x, b_y = get_lat(city_b), get_lon(city_b)
+    return sqrt((a_x - b_x)**2 + (a_y - b_y)**2)
 
 
 def closer_city(lat, lon, city_a, city_b):
@@ -131,6 +145,10 @@ def closer_city(lat, lon, city_a, city_b):
     'Bucharest'
     """
     "*** YOUR CODE HERE ***"
+    new_city = make_city("new_city", lat, lon)
+    new_a_distance = distance(new_city, city_a)
+    new_b_distance = distance(new_city, city_b)
+    return get_name(city_a) if new_a_distance < new_b_distance else get_name(city_b)
 
 
 def check_city_abstraction():
@@ -213,15 +231,15 @@ def get_lon(city):
 
 ###############
 
-
+from functools import reduce
 def count_palindromes(L):
     """The number of palindromic words in the sequence of strings
     L (ignoring case).
 
-    >>> count_palindromes(("Acme", "Madam", "Pivot", "Pip"))
-    2
+    >>> count_palindromes(("Acme", "Madam", "Pivot", "Pip", "mom"))
+    3
     """
-    return ______
+    return reduce(lambda count, word: count + 1 , filter(lambda x: x == x[::-1], map(lambda x: x.lower(), L)), 0)
 
 
 def coords(fn, seq, lower, upper):
@@ -232,7 +250,7 @@ def coords(fn, seq, lower, upper):
     [[-2, 4], [1, 1], [3, 9]]
     """
     "*** YOUR CODE HERE ***"
-    return ______
+    return [[x, fn(x)] for x in seq if  lower <= fn(x) <= upper]
 
 
 def change_abstraction(change):
