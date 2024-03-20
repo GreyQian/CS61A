@@ -65,12 +65,14 @@ def planet(mass):
     """Construct a planet of some mass."""
     assert mass > 0
     "*** YOUR CODE HERE ***"
+    return ['planet', mass]
 
 
 def mass(w):
     """Select the mass of a planet."""
     assert is_planet(w), 'must call mass on a planet'
     "*** YOUR CODE HERE ***"
+    return w[1]
 
 
 def is_planet(w):
@@ -127,6 +129,16 @@ def balanced(m):
     True
     """
     "*** YOUR CODE HERE ***"
+    if is_planet(m):
+        return True
+    else:
+        left_arm = left(m)
+        right_arm = right(m)
+        left_weight = total_weight(end(left_arm))
+        right_weight = total_weight(end(right_arm))
+        left_torque = length(left_arm) * left_weight
+        right_torque = length(right_arm) * right_weight
+        return balanced(end(left_arm)) and balanced(end(right_arm)) and left_torque == right_torque
 
 
 def totals_tree(m):
@@ -159,7 +171,14 @@ def totals_tree(m):
     True
     """
     "*** YOUR CODE HERE ***"
-
+    if is_planet(m):
+        return tree(mass(m))
+    else:
+        left_tree = totals_tree(end(left(m)))
+        right_tree = totals_tree(end(right(m)))
+        tree_label = label(left_tree) + label(right_tree)
+        return tree(tree_label, [left_tree, right_tree])
+        
 
 def replace_loki_at_leaf(t, lokis_replacement):
     """Returns a new tree where every leaf value equal to "loki" has
@@ -191,6 +210,15 @@ def replace_loki_at_leaf(t, lokis_replacement):
     True
     """
     "*** YOUR CODE HERE ***"
+    if is_leaf(t):
+        label_t = label(t)
+        if label_t == "loki":
+            label_t = lokis_replacement
+        return tree(label_t)
+    else:
+        new_branches = [replace_loki_at_leaf(b, lokis_replacement)\
+            for b in branches(t)]
+        return tree(label(t), new_branches)
 
 
 def has_path(t, word):
@@ -225,6 +253,17 @@ def has_path(t, word):
     """
     assert len(word) > 0, 'no path for empty word.'
     "*** YOUR CODE HERE ***"
+    if is_leaf(t):
+        return label(t) == word
+    else:
+        # 保证树有叶子
+        if label(t) == word[0]:
+            if len(word) > 1:
+                return any([has_path(b, word[1:]) for b in branches(t)])
+            else:
+                return True
+        else:
+            return False
 
 
 def str_interval(x):
@@ -249,11 +288,13 @@ def interval(a, b):
 def lower_bound(x):
     """Return the lower bound of interval x."""
     "*** YOUR CODE HERE ***"
+    return x[0]
 
 
 def upper_bound(x):
     """Return the upper bound of interval x."""
     "*** YOUR CODE HERE ***"
+    return x[1]
 
 
 def str_interval(x):
@@ -272,17 +313,18 @@ def add_interval(x, y):
 def mul_interval(x, y):
     """Return the interval that contains the product of any value in x and any
     value in y."""
-    p1 = x[0] * y[0]
-    p2 = x[0] * y[1]
-    p3 = x[1] * y[0]
-    p4 = x[1] * y[1]
-    return [min(p1, p2, p3, p4), max(p1, p2, p3, p4)]
+    p1 = lower_bound(x) * lower_bound(y)
+    p2 = lower_bound(x) * upper_bound(y)
+    p3 = upper_bound(x) * lower_bound(y)
+    p4 = upper_bound(x) * upper_bound(y)
+    return interval(min(p1, p2, p3, p4), max(p1, p2, p3, p4))
 
 
 def sub_interval(x, y):
     """Return the interval that contains the difference between any value in x
     and any value in y."""
     "*** YOUR CODE HERE ***"
+    return interval(lower_bound(x) - upper_bound(y), upper_bound(x) - lower_bound(y))
 
 
 def div_interval(x, y):
@@ -290,6 +332,7 @@ def div_interval(x, y):
     any value in y. Division is implemented as the multiplication of x by the
     reciprocal of y."""
     "*** YOUR CODE HERE ***"
+    assert lower_bound(y)*upper_bound(y) > 0, "no such interval is used as a divisor"
     reciprocal_y = interval(1 / upper_bound(y), 1 / lower_bound(y))
     return mul_interval(x, reciprocal_y)
 
@@ -314,8 +357,8 @@ def check_par():
     >>> lower_bound(x) != lower_bound(y) or upper_bound(x) != upper_bound(y)
     True
     """
-    r1 = interval(1, 1)  # Replace this line!
-    r2 = interval(1, 1)  # Replace this line!
+    r1 = interval(1, 2)  # Replace this line!
+    r2 = interval(1, 2)  # Replace this line!
     return r1, r2
 
 
