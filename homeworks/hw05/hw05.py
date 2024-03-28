@@ -9,6 +9,14 @@ def hailstone(n):
     1
     """
     "*** YOUR CODE HERE ***"
+    yield n
+    if n != 1:
+      if n % 2 == 0:
+        n //= 2
+      else:
+        n = n * 3 + 1
+    yield from hailstone(n)
+    
 
 
 def merge(a, b):
@@ -24,6 +32,18 @@ def merge(a, b):
     [2, 3, 5, 7, 8, 9, 11, 13, 14, 15]
     """
     "*** YOUR CODE HERE ***"
+    next_a, next_b = next(a), next(b)
+    while True:
+      if next_a < next_b:
+        yield next_a 
+        next_a = next(a)
+      elif next_a == next_b:
+        yield next_a
+        next_a, next_b = next(a), next(b)
+      else:
+        yield next_b
+        next_b = next(b)
+    
 
 
 def perms(seq):
@@ -49,6 +69,22 @@ def perms(seq):
     [['a', 'b'], ['b', 'a']]
     """
     "*** YOUR CODE HERE ***"
+    # if len(seq) <= 1:
+    #   yield seq
+    # else:
+    #   for i in range(len(seq)):
+    #     sub_seq = seq[:i] + seq[i + 1:]
+    #     sub_perm = perms(sub_seq)
+    #     for rest_seq in sub_perm:
+    #       yield [seq[i]] + rest_seq
+    
+    if len(seq) <= 1:
+        yield seq
+    else:
+        for perm in perms(seq[1:]):
+            for i in range(len(seq)):
+                yield perm[:i] + seq[0:1] + perm[i:]
+
 
 
 def yield_paths(t, value):
@@ -86,9 +122,13 @@ def yield_paths(t, value):
     [[0, 2], [0, 2, 1, 2]]
     """
     "*** YOUR CODE HERE ***"
-    for _______________ in _________________:
-        for _______________ in _________________:
+    if label(t) == value:
+      yield [label(t)]
+    for branch in branches(t):
+        for path in yield_paths(branch, value):
             "*** YOUR CODE HERE ***"
+            yield [label(t)] + path
+            
 
 
 def remainders_generator(m):
@@ -123,6 +163,15 @@ def remainders_generator(m):
     11
     """
     "*** YOUR CODE HERE ***"
+    def gen(remainder):
+      gen_numbers = naturals()
+      i = next(gen_numbers)
+      while True:
+        if i % m == remainder:
+          yield i
+        i = next(gen_numbers)
+    for i in range(m):
+      yield gen(i)
 
 
 # Tree ADT
