@@ -35,6 +35,12 @@ def scheme_eval(expr, env, _=None):  # Optional third argument is ignored
     else:
         # BEGIN PROBLEM 3
         "*** YOUR CODE HERE ***"
+        procedure = scheme_eval(expr.first, env)
+        # assert isinstance(procedure, Procedure), "a procedure must be an instance of Procedure Class."
+        eval_func = lambda x: scheme_eval(x, env)
+        args = expr.rest
+        args = args.map(eval_func)
+        return scheme_apply(procedure, args, env)
         # END PROBLEM 3
 
 
@@ -47,20 +53,32 @@ def scheme_apply(procedure, args, env):
     if isinstance(procedure, BuiltinProcedure):
         # BEGIN PROBLEM 2
         "*** YOUR CODE HERE ***"
+        args_list, args_expr = [], args
+        while args_expr != nil:
+            args_list.append(args_expr.first)
+            args_expr = args_expr.rest
         # END PROBLEM 2
         try:
             # BEGIN PROBLEM 2
             "*** YOUR CODE HERE ***"
+            if procedure.need_env:
+                return procedure.py_func(*args_list, env)
+            else:
+                return procedure.py_func(*args_list)
             # END PROBLEM 2
         except TypeError as err:
             raise SchemeError('incorrect number of arguments: {0}'.format(procedure))
     elif isinstance(procedure, LambdaProcedure):
         # BEGIN PROBLEM 9
         "*** YOUR CODE HERE ***"
+        new_env = procedure.env.make_child_frame(procedure.formals, args)
+        return eval_all(procedure.body, new_env)
         # END PROBLEM 9
     elif isinstance(procedure, MuProcedure):
         # BEGIN PROBLEM 11
         "*** YOUR CODE HERE ***"
+        new_env = env.make_child_frame(procedure.formals, args)
+        return eval_all(procedure.body, new_env)
         # END PROBLEM 11
     else:
         assert False, "Unexpected procedure: {}".format(procedure)
@@ -82,7 +100,13 @@ def eval_all(expressions, env):
     2
     """
     # BEGIN PROBLEM 6
-    return scheme_eval(expressions.first, env)  # replace this with lines of your own code
+    expr = expressions
+    if expr == nil:
+        return None         # 特殊情况
+    while expr.rest != nil:
+        scheme_eval(expr.first, env)
+        expr = expr.rest
+    return scheme_eval(expr.first, env)  # replace this with lines of your own code
     # END PROBLEM 6
 
 
